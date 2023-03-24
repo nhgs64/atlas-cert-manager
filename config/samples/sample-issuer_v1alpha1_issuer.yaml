@@ -1,0 +1,7 @@
+apiVersion: hvca.globalsign.com/v1alpha1
+kind: Issuer
+metadata:
+  name: issuer-sample
+spec:
+  authSecretName: "issuer-sample-credentials"
+  url: "https://emea.api.hvca.globalsign.com:8443/v2"
