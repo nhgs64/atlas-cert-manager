@@ -27,7 +27,6 @@ ARG VERSION
 
 # Build
 RUN go build \
-  -ldflags="-X=github.com/cert-manager/sample-external-issuer/internal/version.Version=${VERSION}" \
   -mod=readonly \
   -o manager main.go
 

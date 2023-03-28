@@ -7,12 +7,12 @@ SHELL := bash
 
 # The version which will be reported by the --version argument of each binary
 # and which will be used as the Docker image tag
-VERSION ?= 1234
+VERSION ?= 1.0
 # The Docker repository name, overridden in CI.
-DOCKER_REGISTRY ?= 
-DOCKER_IMAGE_NAME ?= hvca-controller
+DOCKER_REGISTRY ?= replaceme
+DOCKER_IMAGE_NAME ?= atlas-kubernetenes-controller
 # Image URL to use all building/pushing image targets
-IMG ?= ${DOCKER_IMAGE_NAME}:${VERSION}
+IMG ?= ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${VERSION}
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 
@@ -25,10 +25,10 @@ ARCH := $(shell go env GOARCH)
 # Kind
 KIND_VERSION := 0.12.0
 KIND := ${BIN}/kind-${KIND_VERSION}
-K8S_CLUSTER_NAME := sample-external-issuer-e2e
+K8S_CLUSTER_NAME := atlas-issuer-e2e
 
 # cert-manager
-CERT_MANAGER_VERSION ?= 1.8.0
+CERT_MANAGER_VERSION ?= 1.11.0
 
 # Controller tools
 CONTROLLER_GEN_VERSION := 0.5.0
