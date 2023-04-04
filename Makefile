@@ -64,9 +64,7 @@ install: manifests
 uninstall: manifests
 	kustomize build config/crd | kubectl delete -f -
 
-# TODO(wallrj): .PHONY ensures that the install file is always regenerated,
-# because I this really depends on the checksum of the Docker image and all the
-# base Kustomize files.
+# Regenerate the install.yaml
 .PHONY: ${INSTALL_YAML}
 ${INSTALL_YAML}:
 	mkdir -p $(dir $@)

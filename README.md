@@ -7,24 +7,10 @@ which aren't built into the cert-manager core.
 This repository implements an [External Issuer] for GlobalSign's Atlas .
 
 ## Install
-
+First install [cert-manager](https://cert-manager.io/docs/installation/), then install the Atlas controller:
 ```console
-
+kubectl -k 
 ```
-## Building
-### Prerequisites
-You will need the following command line tools installed on your PATH:
-
-* [Git](https://git-scm.com/)
-* [Golang v1.17+](https://golang.org/)
-* [Docker v17.03+](https://docs.docker.com/install/)
-* [Kubectl v1.11.3+](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-* [Kubebuilder v2.3.1+](https://book.kubebuilder.io/quick-start.html#installation)
-* [Kustomize v3.8.1+](https://kustomize.io/)
-
-### Build
-```
-make manager
 
 ## Usage
 
@@ -48,8 +34,31 @@ Kubernetes is now ready to issue Atlas certificates. Certificate and certificate
 as other cert-manager issuers, however the group in the issuerRef must specify `hvca.globalsign.com`. See samples/certificate_issuer.yaml
 for an example.
 
-## Links
+## Building
+### Prerequisites
+You will need the following command line tools installed on your PATH:
 
+* [Git](https://git-scm.com/)
+* [Golang v1.17+](https://golang.org/)
+* [Docker v17.03+](https://docs.docker.com/install/)
+* [Kubectl v1.11.3+](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+* [Kubebuilder v2.3.1+](https://book.kubebuilder.io/quick-start.html#installation)
+* [Kustomize v3.8.1+](https://kustomize.io/)
+
+### Update install yaml
+If changes are made affecting CRDs, roles, deployments etc, regenerate the yaml and deploy using:
+```
+make deploy
+```
+
+### Docker Image
+```
+make docker-build
+```
+The Docker image for the controller will now be available in the local docker image directory.
+
+## Links
+[Cert Manager]: https://cert-manager.io/docs/installation/
 [External Issuer]: https://cert-manager.io/docs/contributing/external-issuers
 [cert-manager Concepts Documentation]: https://cert-manager.io/docs/concepts
 [Kubebuilder Book]: https://book.kubebuilder.io
