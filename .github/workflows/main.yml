@@ -10,8 +10,8 @@
 name: Build and Publish
 
 on:
-  push:
-    branches: ['release']
+  release:
+    types: ['published']
 
 env:
   REGISTRY: ghcr.io
