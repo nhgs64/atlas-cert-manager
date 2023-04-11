@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: cert-manager-controller-approve:sample-issuer-example-com
+  name: cert-manager-controller-approve:hvca.globalsign.com
 rules:
 - apiGroups:
   - cert-manager.io
