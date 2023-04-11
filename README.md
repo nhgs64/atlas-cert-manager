@@ -7,6 +7,8 @@ which aren't built into the cert-manager core.
 This repository implements an [External Issuer] for GlobalSign's Atlas .
 
 ## Install
+[demo.webm](https://user-images.githubusercontent.com/74076634/231236621-0d450b0c-b69c-4ae1-9659-ef17956b0b26.webm)
+
 First install [cert-manager](https://cert-manager.io/docs/installation/), then install the Atlas controller:
 ```console
 kubectl -k 
