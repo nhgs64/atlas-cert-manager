@@ -6,18 +6,25 @@ which aren't built into the cert-manager core.
 
 This repository implements an [External Issuer] for GlobalSign's Atlas .
 
-## Install
+## Demo
 [demo.webm](https://user-images.githubusercontent.com/74076634/231236621-0d450b0c-b69c-4ae1-9659-ef17956b0b26.webm)
 
-First install [cert-manager](https://cert-manager.io/docs/installation/), then install the Atlas controller:
+## Install
+
+First install [cert-manager], then install the Atlas controller and CRDs:
 ```console
-kubectl -k 
+kubectl apply -f https://github.com/nhgs64/atlas-cert-manager/releases/download/v0.2/install.yaml
+```
+The controller is deployed and ready to handle Atlas requests.
+Create the Atlas secret file, containing the API key and secret as well as the mTLS credential. Add your own account details to this file.
+```console
+kubectl apply -f config/samples/secret_issuer.yaml
 ```
 
 ## Usage
 
 There are sample yaml files in the samples directory. To start issuing, an Atlas issuer needs to be deployed along with a secret.
-The secret (see example sampels/secret_issuer.yaml) contains four fields which must contain the base64 encoded API key, API secret, 
+The secret (see example sampels/secret_issuer.yaml) holds four fields which must contain the base64 encoded API key, API secret, 
 mTLS cert and mTLS key.
 ```
 cat mymtlscertificate.pem | base64 -w 0
@@ -27,7 +34,7 @@ echo en82u8uXmo39u94uFG9589489djiJdid | base64     # encode the API secret
 ```
 *Note: certificate and key are expected to be in PEM format, not DER*
 
-Next, deploy the secret and issuer:
+Next, deploy the secret (after updating it with your values) and issuer:
 ```
 kubectl create -f samples/secret_issuer.yaml
 kubectl create -f sample/sample-issuer_v1alpha1_issuer.yaml
@@ -60,7 +67,8 @@ make docker-build
 The Docker image for the controller will now be available in the local docker image directory.
 
 ## Links
-[Cert Manager]: https://cert-manager.io/docs/installation/
+[demo.webm]: https://user-images.githubusercontent.com/74076634/231236621-0d450b0c-b69c-4ae1-9659-ef17956b0b26.webm
+[cert-manager]: https://cert-manager.io/docs/installation/
 [External Issuer]: https://cert-manager.io/docs/contributing/external-issuers
 [cert-manager Concepts Documentation]: https://cert-manager.io/docs/concepts
 [Kubebuilder Book]: https://book.kubebuilder.io
