@@ -11,26 +11,28 @@ This repository implements an [External Issuer] for GlobalSign's Atlas .
 
 ## Install
 
-First install [cert-manager], then install the Atlas controller and CRDs:
+First install [cert-manager]:
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+
+Next, install the Atlas controller and CRDs:
 ```console
-kubectl apply -f https://github.com/nhgs64/atlas-cert-manager/releases/download/v0.2/install.yaml
+kubectl apply -f https://github.com/nhgs64/atlas-cert-manager/releases/latest/download/install.yaml
 ```
 The controller is deployed and ready to handle Atlas requests.
 
 ## Usage
 
 There are sample yaml files in the samples directory. To start issuing, an Atlas issuer needs to be deployed along with a secret.
-The secret (see example [config/samples/secret_issuer.yaml](config/samples/secret_issuer.yaml)) holds four fields which must contain the base64 encoded API key, API secret, 
-mTLS cert and mTLS key.
+The secret (see example [config/samples/secret_issuer.yaml](config/samples/secret_issuer.yaml)) holds four fields which must contain the  API key, API secret, mTLS cert and mTLS key.
 ```
-cat mymtlscertificate.pem | base64 -w 0
-cat mymtlskey.pem | base64 -w 0
-echo -n 1234567abcdef | base64                        # encode the API key
-echo -n en82u8uXmo39u94uFG9589489djiJdid | base64     # encode the API secret
+kubectl create secret generic issuer-sample-credentials --from-literal=apikey=123456789abc \
+--from-literal=apisecret=abcdefghijkl123456789 \
+--from-literal=cert="$(cat MyCert.pem)" \
+--from-literal=certkey="$(cat MyCertKey.pem)"
 ```
 *Note: certificate and key are expected to be in PEM format, not DER*
 
-Next, deploy the secret (after updating it with your values) and issuer:
+Next, deploy the issuer:
 ```
 kubectl create -f config/samples/secret_issuer.yaml
 kubectl create -f config/samples/sample-issuer_v1alpha1_issuer.yaml
