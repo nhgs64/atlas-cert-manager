@@ -12,8 +12,9 @@ This repository implements an [External Issuer] for GlobalSign's Atlas certifica
 ## Install
 
 First install [cert-manager]:
+```
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
-
+```
 Next, install the Atlas controller and CRDs:
 ```console
 kubectl apply -f https://github.com/nhgs64/atlas-cert-manager/releases/latest/download/install.yaml
@@ -39,7 +40,14 @@ kubectl create -f config/samples/sample-issuer_v1alpha1_issuer.yaml
 ```
 Kubernetes is now ready to issue Atlas certificates. Certificate and certificate request objects can be created the same way 
 as other cert-manager issuers, however the group in the issuerRef must specify `hvca.globalsign.com`. See [config/samples/certificate_issuer.yaml](config/samples/certificate_issuer.yaml)
-for an example.
+for an example. Keep in mind that this new group also applies when examining issuer resources on the cluster so use
+```
+kubectl get issuers.hvca.globalsign.com
+```
+instead of
+```
+kubectl get issuers.cert-manager.io
+```
 
 ## Building
 ### Prerequisites
