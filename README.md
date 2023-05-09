@@ -4,7 +4,7 @@
 External issuers extend [cert-manager] to issue certificates using APIs and services
 which aren't built into the cert-manager core.
 
-This repository implements an [External Issuer] for GlobalSign's Atlas .
+This repository implements an [External Issuer] for GlobalSign's Atlas certificate issuance API.
 
 ## Demo
 [demo.webm]
