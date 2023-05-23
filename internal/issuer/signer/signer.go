@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"math/big"
 	"time"
 
@@ -73,11 +74,62 @@ func (o *hvcaSigner) Sign(csrBytes []byte) ([]byte, error) {
 	}
 
 	var req = hvclient.Request{
-		CSR: csr,
-		Subject: &hvclient.DN{ // TODO: make this more flexible
-			CommonName: csr.Subject.CommonName,
-		},
-		Validity: &hvclient.Validity{NotBefore: time.Now(), NotAfter: time.Unix(0, 0)}, //hardcoded max validity TODO
+		CSR:      csr,
+		Subject:  &hvclient.DN{},
+		SAN:      &hvclient.SAN{},
+		Validity: &hvclient.Validity{NotBefore: time.Now(), NotAfter: time.Unix(0, 0)},
+	}
+	// Pull the validation policy and check it for required fields
+	vp, err := clnt.Policy(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// Subject validation
+	// common name
+	if vp.SubjectDN.CommonName.Presence == hvclient.Required {
+		if csr.Subject.CommonName == "" {
+			return nil, errors.New("atlas validation policy requires subject common name, but CSR did not contain one")
+		}
+		req.Subject.CommonName = csr.Subject.CommonName
+	}
+	if vp.SubjectDN.CommonName.Presence == hvclient.Optional {
+		req.Subject.CommonName = csr.Subject.CommonName
+	}
+
+	// serial number
+	if vp.SubjectDN.SerialNumber.Presence == hvclient.Required {
+		if csr.Subject.SerialNumber == "" {
+			return nil, errors.New("atlas validation policy requires subject serial number, but CSR did not contain one")
+		}
+		req.Subject.SerialNumber = csr.Subject.SerialNumber
+	}
+	if vp.SubjectDN.SerialNumber.Presence == hvclient.Optional {
+		req.Subject.SerialNumber = csr.Subject.SerialNumber
+	}
+	// Populate SANs
+	// DNS Names
+	if vp.SAN.DNSNames.Static == false && vp.SAN.DNSNames.MaxCount > 0 {
+		if len(csr.DNSNames) < vp.SAN.DNSNames.MaxCount {
+			req.SAN.DNSNames = append(req.SAN.DNSNames[:], csr.DNSNames[:]...)
+		}
+		// Copy the common name into the SAN DNS field if there is space
+		if req.Subject.CommonName != "" && len(req.CSR.DNSNames) < vp.SAN.DNSNames.MaxCount {
+			req.SAN.DNSNames = append(req.SAN.DNSNames, req.Subject.CommonName)
+		}
+	}
+	// IP addresses
+	if vp.SAN.IPAddresses.Static == false && vp.SAN.IPAddresses.MaxCount > 0 {
+		if len(csr.IPAddresses) < vp.SAN.IPAddresses.MaxCount {
+			req.SAN.IPAddresses = append(req.SAN.IPAddresses[:], csr.IPAddresses[:]...)
+		}
+	}
+	// Validate number of SANs
+	if vp.SAN.DNSNames.MinCount < len(csr.DNSNames) || vp.SAN.IPAddresses.MinCount < len(csr.IPAddresses) {
+		return nil, errors.New("atlas validation policy requires additional SANs not present in the provided CSR")
+	}
+	// Check key type
+	if vp.PublicKey.KeyType.String() != csr.PublicKeyAlgorithm.String() {
+		return nil, errors.New("CSR public key type doesn't match Atlas account pubic key type")
 	}
 	// Request cert
 	if serial, err = clnt.CertificateRequest(ctx, &req); err != nil {
