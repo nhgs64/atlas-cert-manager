@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/cert-manager/cert-manager v1.8.0
-	github.com/globalsign/hvclient v1.3.0
+	github.com/globalsign/hvclient v1.4.0
 	github.com/go-logr/logr v1.2.0
 	github.com/stretchr/testify v1.7.0
 	k8s.io/api v0.23.4
