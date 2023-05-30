@@ -143,38 +143,4 @@ func (o *hvcaSigner) Sign(csrBytes []byte) ([]byte, error) {
 		Type:  "CERTIFICATE",
 		Bytes: info.X509.Raw,
 	}), nil
-
-	/*
-		csr, err := parseCSR(csrBytes)
-		if err != nil {
-			return nil, err
-		}
-		key, err := parseKey(keyPEM)
-		if err != nil {
-			return nil, err
-		}
-		cert, err := parseCert(certPEM)
-		if err != nil {
-			return nil, err
-		}
-		ca := &CertificateAuthority{
-			Certificate: cert,
-			PrivateKey:  key,
-			Backdate:    5 * time.Minute,
-		}
-		crtDER, err := ca.Sign(csr.Raw, PermissiveSigningPolicy{
-			TTL: duration,
-			Usages: []capi.KeyUsage{
-				capi.UsageServerAuth,
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-		return pem.EncodeToMemory(&pem.Block{
-			Type:  "CERTIFICATE",
-			Bytes: crtDER,
-		}), nil
-		return nil, nil
-	*/
 }
