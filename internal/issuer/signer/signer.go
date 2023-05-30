@@ -124,7 +124,7 @@ func (o *hvcaSigner) Sign(csrBytes []byte) ([]byte, error) {
 		}
 	}
 	// Validate number of SANs
-	if vp.SAN.DNSNames.MinCount < len(csr.DNSNames) || vp.SAN.IPAddresses.MinCount < len(csr.IPAddresses) {
+	if vp.SAN.DNSNames.MinCount > len(req.SAN.DNSNames) || vp.SAN.IPAddresses.MinCount > len(req.SAN.IPAddresses) {
 		return nil, errors.New("atlas validation policy requires additional SANs not present in the provided CSR")
 	}
 	// Check key type
