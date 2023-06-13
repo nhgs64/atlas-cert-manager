@@ -35,7 +35,6 @@ kubectl create secret generic issuer-sample-credentials --from-literal=apikey=12
 
 Next, deploy the issuer:
 ```
-kubectl create -f config/samples/secret_issuer.yaml
 kubectl create -f config/samples/sample-issuer_v1alpha1_issuer.yaml
 ```
 Kubernetes is now ready to issue Atlas certificates. Certificate and certificate request objects can be created the same way 
