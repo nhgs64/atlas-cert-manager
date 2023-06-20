@@ -131,6 +131,11 @@ func (o *hvcaSigner) Sign(csrBytes []byte) ([]byte, error) {
 	if vp.PublicKey.KeyType.String() != csr.PublicKeyAlgorithm.String() {
 		return nil, errors.New("CSR public key type doesn't match Atlas account pubic key type")
 	}
+	// Check PKCS type
+	if vp.PublicKey.KeyFormat != hvclient.PKCS10 {
+		return nil, errors.New("atlas account does not support pkcs10 key format, update atlas account")
+	}
+
 	// Request cert
 	if serial, err = clnt.CertificateRequest(ctx, &req); err != nil {
 		return nil, err
