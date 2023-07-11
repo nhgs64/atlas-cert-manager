@@ -41,8 +41,17 @@ func HVCASignerFromIssuerAndSecretData(spec *sampleissuerapi.IssuerSpec, secret 
 	if hvconfig.TLSCert, err = x509.ParseCertificate(certDER.Bytes); err != nil {
 		return nil, err
 	}
-	if hvconfig.TLSKey, err = x509.ParsePKCS1PrivateKey(keyDER.Bytes); err != nil {
-		return nil, err
+	// Parse the mTLS cert private key in PKCS1 or PKCS8 format
+	if keyDER.Type == "RSA PRIVATE KEY" {
+		if hvconfig.TLSKey, err = x509.ParsePKCS1PrivateKey(keyDER.Bytes); err != nil {
+			return nil, err
+		}
+	} else if keyDER.Type == "PRIVATE KEY" {
+		if hvconfig.TLSKey, err = x509.ParsePKCS8PrivateKey(keyDER.Bytes); err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, errors.New("unable to determine the mTLS private key type")
 	}
 	if err = hvconfig.Validate(); err != nil {
 		return nil, err
