@@ -83,10 +83,11 @@ func (o *hvcaSigner) Sign(csrBytes []byte) ([]byte, error) {
 	}
 
 	var req = hvclient.Request{
-		CSR:      csr,
-		Subject:  &hvclient.DN{},
-		SAN:      &hvclient.SAN{},
-		Validity: &hvclient.Validity{NotBefore: time.Now(), NotAfter: time.Unix(0, 0)},
+		CSR:       csr,
+		Subject:   &hvclient.DN{},
+		SAN:       &hvclient.SAN{},
+		Validity:  &hvclient.Validity{NotBefore: time.Now(), NotAfter: time.Unix(0, 0)},
+		Signature: &hvclient.Signature{},
 	}
 	// Pull the validation policy and check it for required fields
 	vp, err := clnt.Policy(ctx)
@@ -138,13 +139,16 @@ func (o *hvcaSigner) Sign(csrBytes []byte) ([]byte, error) {
 	}
 	// Check key type
 	if vp.PublicKey.KeyType.String() != csr.PublicKeyAlgorithm.String() {
-		return nil, errors.New("CSR public key type doesn't match Atlas account pubic key type")
+		return nil, errors.New("csr public key type doesn't match Atlas account pubic key type: CSR - " + csr.PublicKeyAlgorithm.String() + "Atlas - " + vp.PublicKey.KeyType.String())
 	}
 	// Check PKCS type
 	if vp.PublicKey.KeyFormat != hvclient.PKCS10 {
 		return nil, errors.New("atlas account does not support pkcs10 key format, update atlas account")
 	}
-
+	// Check signature hash algorithm requirement and set to the first approved one
+	if vp.SignaturePolicy.HashAlgorithm.Presence == 2 { //Presence is required
+		req.Signature.HashAlgorithm = vp.SignaturePolicy.HashAlgorithm.List[0]
+	}
 	// Request cert
 	if serial, err = clnt.CertificateRequest(ctx, &req); err != nil {
 		return nil, err
